@@ -195,11 +195,12 @@ const core = __importStar(__nccwpck_require__(2186));
 const web_api_1 = __nccwpck_require__(431);
 function createBlock(branchesInfo) {
     const { branchCommitAuthor, branchCommitLastUpdate, branchCommitMessage, branchCommitUrl, branchName } = branchesInfo;
+    const message = `${branchCommitMessage.slice(0, 40)}...`;
     const block = {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: `> Nome da Branch: \`${branchName}\`\n> URL Ultimo Commit: \`${branchCommitUrl}\`\n> Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n> Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n> Mensagem do Commit: \`${branchCommitMessage}\``
+            text: `> Nome da Branch: \`${branchName}\`\n> URL Ultimo Commit: \`${branchCommitUrl}\`\n> Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n> Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n> Mensagem do Commit: \`${message}\``
         }
     };
     return block;
