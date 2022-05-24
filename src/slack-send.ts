@@ -46,6 +46,9 @@ export async function slack({
     ]
 
     for (const branchInfo of branchesInfo) {
+      if (branchInfo.branchName.startsWith('dependabot')) {
+        continue
+      }
       blocks.push(createBlock(branchInfo))
     }
 

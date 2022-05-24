@@ -220,6 +220,9 @@ function slack({ channelID, branchesInfo, repoName, slackToken }) {
                 }
             ];
             for (const branchInfo of branchesInfo) {
+                if (branchInfo.branchName.startsWith('dependabot')) {
+                    continue;
+                }
                 blocks.push(createBlock(branchInfo));
             }
             yield webClient.chat.postMessage({
