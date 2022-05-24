@@ -12,10 +12,9 @@ function githubToken(): string {
 export async function execute(): Promise<void> {
   const toolKit = getOctokit(githubToken())
 
-  const ref = toolKit.rest.git.getRef({
-    ...context.repo,
-    ref: context.ref
+  const branches = toolKit.rest.repos.listBranches({
+    ...context.repo
   })
 
-  core.debug(JSON.stringify(ref))
+  core.debug(JSON.stringify(branches))
 }

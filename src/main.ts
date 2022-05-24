@@ -6,8 +6,6 @@ async function run(): Promise<void> {
     core.debug(new Date().toTimeString())
     await execute()
     core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

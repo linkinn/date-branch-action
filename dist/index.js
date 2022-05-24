@@ -52,8 +52,8 @@ function githubToken() {
 function execute() {
     return __awaiter(this, void 0, void 0, function* () {
         const toolKit = (0, github_1.getOctokit)(githubToken());
-        const ref = toolKit.rest.git.getRef(Object.assign(Object.assign({}, github_1.context.repo), { ref: github_1.context.ref }));
-        core.debug(JSON.stringify(ref));
+        const branches = toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
+        core.debug(JSON.stringify(branches));
     });
 }
 exports.execute = execute;
@@ -107,7 +107,6 @@ function run() {
             core.debug(new Date().toTimeString());
             yield (0, date_branch_1.execute)();
             core.debug(new Date().toTimeString());
-            core.setOutput('time', new Date().toTimeString());
         }
         catch (error) {
             if (error instanceof Error)
