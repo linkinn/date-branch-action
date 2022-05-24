@@ -12,7 +12,7 @@ function githubToken(): string {
 export async function execute(): Promise<void> {
   const toolKit = getOctokit(githubToken())
 
-  const branches = toolKit.rest.repos.listBranches({
+  const branches = await toolKit.rest.repos.listBranches({
     ...context.repo
   })
 
