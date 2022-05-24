@@ -12,22 +12,27 @@ function githubToken(): string {
 export async function execute(): Promise<void> {
   const toolKit = getOctokit(githubToken())
 
-  const {data} = await toolKit.rest.repos.listBranches({
+  const {data: branchData} = await toolKit.rest.repos.listBranches({
     ...context.repo
   })
 
-  // const dates = await toolKit.rest.repos.listCommits({
-  //   ...context.repo
-  // })
+  const branchesInfo = await Promise.all(
+    branchData.map(async branch => {
+      const {data} = await toolKit.rest.git.getCommit({
+        ...context.repo,
+        commit_sha: branch.commit.sha
+      })
 
-  const commit = await toolKit.rest.git.getCommit({
-    ...context.repo,
-    commit_sha: 'f57250356fcb19241b0a2c4b1d29c8f83d719fc8'
-  })
+      return {
+        branchName: branch.name,
+        branchCommitSha: branch.commit.sha,
+        branchCommitUrl: branch.commit.url,
+        branchCommitAuthor: data.committer.name,
+        branchCommitLastUpdate: data.committer.date,
+        branchCommitMessage: data.message
+      }
+    })
+  )
 
-  const branchesName = data.map(branch => branch.name)
-
-  core.debug(JSON.stringify(branchesName))
-  // core.debug(JSON.stringify(dates))
-  core.debug(JSON.stringify(commit))
+  core.debug(JSON.stringify(branchesInfo))
 }
