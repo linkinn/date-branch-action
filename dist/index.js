@@ -53,11 +53,13 @@ function execute() {
     return __awaiter(this, void 0, void 0, function* () {
         const toolKit = (0, github_1.getOctokit)(githubToken());
         const { data } = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
-        const dates = yield toolKit.rest.repos.listCommits(Object.assign({}, github_1.context.repo));
+        // const dates = await toolKit.rest.repos.listCommits({
+        //   ...context.repo
+        // })
         const commit = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, github_1.context.repo), { commit_sha: 'f57250356fcb19241b0a2c4b1d29c8f83d719fc8' }));
         const branchesName = data.map(branch => branch.name);
         core.debug(JSON.stringify(branchesName));
-        core.debug(JSON.stringify(dates));
+        // core.debug(JSON.stringify(dates))
         core.debug(JSON.stringify(commit));
     });
 }

@@ -16,9 +16,9 @@ export async function execute(): Promise<void> {
     ...context.repo
   })
 
-  const dates = await toolKit.rest.repos.listCommits({
-    ...context.repo
-  })
+  // const dates = await toolKit.rest.repos.listCommits({
+  //   ...context.repo
+  // })
 
   const commit = await toolKit.rest.git.getCommit({
     ...context.repo,
@@ -28,6 +28,6 @@ export async function execute(): Promise<void> {
   const branchesName = data.map(branch => branch.name)
 
   core.debug(JSON.stringify(branchesName))
-  core.debug(JSON.stringify(dates))
+  // core.debug(JSON.stringify(dates))
   core.debug(JSON.stringify(commit))
 }
