@@ -16,7 +16,18 @@ export async function execute(): Promise<void> {
     ...context.repo
   })
 
+  const dates = await toolKit.rest.repos.listCommits({
+    ...context.repo
+  })
+
+  const commit = await toolKit.rest.git.getCommit({
+    ...context.repo,
+    commit_sha: 'f57250356fcb19241b0a2c4b1d29c8f83d719fc8'
+  })
+
   const branchesName = data.map(branch => branch.name)
 
   core.debug(JSON.stringify(branchesName))
+  core.debug(JSON.stringify(dates))
+  core.debug(JSON.stringify(commit))
 }
