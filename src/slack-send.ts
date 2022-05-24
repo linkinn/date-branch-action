@@ -15,12 +15,7 @@ function createBlock(branchesInfo: IBranchesInfo): IBlocks {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `> Nome da Branch: \`${branchName}\`\n
-        > URL Ultimo Commit: \`${branchCommitUrl}\`\n
-        > Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n
-        > Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n
-        > Mensagem do Commit: \`${branchCommitMessage}\`
-        `
+      text: `> Nome da Branch: \`${branchName}\`\n> URL Ultimo Commit: \`${branchCommitUrl}\`\n> Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n> Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n> Mensagem do Commit: \`${branchCommitMessage}\``
     }
   }
 
