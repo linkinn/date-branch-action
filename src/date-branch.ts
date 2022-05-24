@@ -16,5 +16,5 @@ export async function execute(): Promise<void> {
     ...context.repo
   })
 
-  core.debug(JSON.stringify(branches))
+  core.debug(JSON.stringify(branches.data))
 }

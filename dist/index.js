@@ -53,7 +53,7 @@ function execute() {
     return __awaiter(this, void 0, void 0, function* () {
         const toolKit = (0, github_1.getOctokit)(githubToken());
         const branches = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
-        core.debug(JSON.stringify(branches));
+        core.debug(JSON.stringify(branches.data));
     });
 }
 exports.execute = execute;
