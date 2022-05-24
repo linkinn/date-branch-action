@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import {getOctokit, context} from '@actions/github'
-// import {slack} from './slack-send'
+import {slack} from './slack-send'
 
 function githubToken(): string {
   const token = process.env.GITHUB_TOKEN
@@ -35,4 +35,22 @@ export async function execute(): Promise<void> {
   )
 
   core.debug(JSON.stringify(branchesInfo))
+
+  if (branchesInfo.length === 0) {
+    return
+  }
+
+  const slackToken = process.env.SLACK_TOKEN
+
+  if (!slackToken) {
+    return
+  }
+
+  const channelID = core.getInput('channel_id')
+  await slack({
+    channelID,
+    branchesInfo,
+    repoName: context.repo.repo,
+    slackToken
+  })
 }

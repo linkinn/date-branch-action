@@ -1,6 +1,10 @@
 name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
+inputs:
+  channel_id:
+    required: false
+    description: 'Add channel'
 runs:
   using: 'node16'
   main: 'dist/index.js'

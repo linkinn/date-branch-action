@@ -1,24 +1,35 @@
 import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
+import {ISlack, IBlocks, IBranchesInfo} from './interfaces'
 
-interface ISlack {
-  payload: string
-  channelID: string
-  branchName: string
-  repoName: string
-  slackToken: string
-}
+function createBlock(branchesInfo: IBranchesInfo): IBlocks {
+  const {
+    branchCommitAuthor,
+    branchCommitLastUpdate,
+    branchCommitMessage,
+    branchCommitUrl,
+    branchName
+  } = branchesInfo
 
-interface IBlocks {
-  type: string
-  text: any
-  accessory?: any
+  const block: IBlocks = {
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `> Nome da Branch: \`${branchName}\`\n
+        > URL Ultimo Commit: \`${branchCommitUrl}\`\n
+        > Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n
+        > Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n
+        > Mensagem do Commit: \`${branchCommitMessage}\`
+        `
+    }
+  }
+
+  return block
 }
 
 export async function slack({
-  payload,
   channelID,
-  branchName,
+  branchesInfo,
   repoName,
   slackToken
 }: ISlack): Promise<void> {
@@ -29,15 +40,17 @@ export async function slack({
 
     const blocks: IBlocks[] = [
       {
-        type: 'section',
+        type: 'header',
         text: {
-          type: 'mrkdwn',
-          text:
-            payload ||
-            `@channel Foi criado a branch ${branchName} fora do padrão no repositorio *${repoName}*, a mesma sera deletada`
+          type: 'plain_text',
+          text: `Repositorio ${repoName} tem branches aniversariantes`
         }
       }
     ]
+
+    for (const branchInfo of branchesInfo) {
+      blocks.push(createBlock(branchInfo))
+    }
 
     await webClient.chat.postMessage({
       mrkdwn: true,

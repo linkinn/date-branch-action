@@ -10,3 +10,6 @@ jobs:
       - uses: ./
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        with:
+          channel_id: ${{ secrets.CHANNEL_ID }}
