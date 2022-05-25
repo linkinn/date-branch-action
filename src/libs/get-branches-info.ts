@@ -20,10 +20,10 @@ export async function getBranchesInfo(
         branchName: branch.name,
         branchCommitSha: branch.commit.sha,
         branchCommitUrl: branch.commit.url,
-        branchCommitAuthor: data.commit.author.name,
-        branchCommitAuthorDate: data.commit.author.date,
-        branchCommitterName: data.commit.committer.name,
-        branchCommitterLastUpdate: data.commit.committer.date,
+        branchCommitAuthor: data.author.name,
+        branchCommitAuthorDate: data.author.date,
+        branchCommitterName: data.committer.name,
+        branchCommitterLastUpdate: data.committer.date,
         branchCommitterMessage: data.message
       }
     })
