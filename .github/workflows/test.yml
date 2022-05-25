@@ -34,4 +34,5 @@ jobs:
           channel_id: ${{secrets.CHANNEL_ID}}
           thread_ts: ${{ needs.slack.outputs.thread_ts }}
         env:
-          SLACK_TOKEN: ${{secrets.SLACK_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
