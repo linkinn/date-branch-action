@@ -275,7 +275,8 @@ function slack({ channelID, branchesInfo, repoName, slackToken, threadTS }) {
             const { message } = yield webClient.chat.postMessage({
                 mrkdwn: true,
                 blocks,
-                channel: channelID
+                channel: channelID,
+                thread_ts: threadTS || undefined
             });
             const thread_ts = message === null || message === void 0 ? void 0 : message.ts;
             if (thread_ts) {
