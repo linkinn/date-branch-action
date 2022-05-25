@@ -5,6 +5,8 @@ on:
 jobs:
   slack:
     runs-on: ubuntu-latest
+    outputs:
+      thread_ts: ${{ steps.thread_id.outputs.thread_ts }}
     steps:
       - name: Checkout Github
         uses: actions/checkout@v3

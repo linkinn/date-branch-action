@@ -99,6 +99,63 @@ exports.execute = execute;
 
 /***/ }),
 
+/***/ 9277:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.blockThread = exports.blockMessage = void 0;
+function blockMessage(repoName) {
+    const blocks = [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: `@channel :patying_face::patying_face::patying_face: *Braches aniversariantes da semana do repositorio \`${repoName}\`* :sweat::sweat::sweat:`
+            }
+        }
+    ];
+    return blocks;
+}
+exports.blockMessage = blockMessage;
+function createBlock(branchesInfo) {
+    const { branchCommitAuthor, // Criado da branch
+    branchCommitLastUpdate, // Colocar logica de data
+    branchName } = branchesInfo;
+    const block = {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitLastUpdate}\` sem receber atualizações`
+        }
+    };
+    return block;
+}
+function blockThread(branchesInfo) {
+    const blocks = [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: `:warning::construction::put_litter_in_its_place: \`Fiquem atentos, em breve bracnhes com mais de 30 dias sem atualização serão removidas automaticamente\``
+            }
+        }
+    ];
+    for (const branchInfo of branchesInfo) {
+        // criar lista de branch que nao vai ser preciso ser avaliada
+        if (branchInfo.branchName.startsWith('dependabot')) {
+            continue;
+        }
+        blocks.push(createBlock(branchInfo));
+    }
+    return blocks;
+}
+exports.blockThread = blockThread;
+
+
+/***/ }),
+
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -200,61 +257,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.slack = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const web_api_1 = __nccwpck_require__(431);
-function blockMessage(repoName) {
-    const blocks = [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `@channel :patying_face::patying_face::patying_face: *Braches aniversariantes da semana do repositorio \`${repoName}\`* :sweat::sweat::sweat:`
-            }
-        }
-    ];
-    return blocks;
-}
-function createBlock(branchesInfo) {
-    const { branchCommitAuthor, // Criado da branch
-    branchCommitLastUpdate, // Colocar logica de data
-    branchName } = branchesInfo;
-    const block = {
-        type: 'section',
-        text: {
-            type: 'mrkdwn',
-            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitLastUpdate}\` sem receber atualizações`
-        }
-    };
-    return block;
-}
-function blockThread(branchesInfo) {
-    const blocks = [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `:warning::construction::put_litter_in_its_place: \`Fiquem atentos, em breve bracnhes com mais de 30 dias sem atualização serão removidas automaticamente\``
-            }
-        }
-    ];
-    for (const branchInfo of branchesInfo) {
-        // criar lista de branch que nao vai ser preciso ser avaliada
-        if (branchInfo.branchName.startsWith('dependabot')) {
-            continue;
-        }
-        blocks.push(createBlock(branchInfo));
-    }
-    return blocks;
-}
+const create_block_message_slack_1 = __nccwpck_require__(9277);
 function slack({ channelID, branchesInfo, repoName, slackToken, threadTS }) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`Start slack message...`);
+        core.debug(`Channel ID: ${channelID}`);
+        core.debug(`Thread TS: ${threadTS}`);
         try {
             const webClient = new web_api_1.WebClient(slackToken);
             let blocks = [];
             if (threadTS) {
-                blocks = blockThread(branchesInfo);
+                blocks = (0, create_block_message_slack_1.blockThread)(branchesInfo);
             }
             else {
-                blocks = blockMessage(repoName);
+                blocks = (0, create_block_message_slack_1.blockMessage)(repoName);
             }
             const { message } = yield webClient.chat.postMessage({
                 mrkdwn: true,
