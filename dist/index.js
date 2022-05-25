@@ -108,7 +108,7 @@ function createBlock(branchesInfo) {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate}\` sem receber atualizações`
+            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate.toString()}\` dia/s sem receber atualizações`
         }
     };
     return block;
@@ -200,7 +200,9 @@ function getBranchesInfo(branchData, toolKit, context) {
                 branchCommitAuthor: data.author.name,
                 branchCommitAuthorDate: data.author.date,
                 branchCommitterName: data.committer.name,
-                branchCommitterLastUpdate: diffDate({ branchCommitterLastUpdate: data.committer.date }),
+                branchCommitterLastUpdate: diffDate({
+                    branchCommitterLastUpdate: data.committer.date
+                }),
                 branchCommitterMessage: data.message
             };
         })));

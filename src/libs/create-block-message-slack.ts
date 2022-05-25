@@ -25,7 +25,7 @@ function createBlock(branchesInfo: IBranchesInfo): IBlocks {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate}\` sem receber atualizações`
+      text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate.toString()}\` dia/s sem receber atualizações`
     }
   }
 
