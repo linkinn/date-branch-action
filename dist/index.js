@@ -53,11 +53,11 @@ const github_1 = __nccwpck_require__(5438);
 const slack_send_1 = __nccwpck_require__(9555);
 const get_github_token_1 = __nccwpck_require__(2589);
 const get_branches_info_1 = __nccwpck_require__(6164);
-function execute({ channelID, threadTS }) {
+function execute({ channelID, threadTS, maxDays }) {
     return __awaiter(this, void 0, void 0, function* () {
         const toolKit = (0, github_1.getOctokit)((0, get_github_token_1.githubToken)());
         const { data: branchData } = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
-        const branchesInfo = yield (0, get_branches_info_1.getBranchesInfo)(branchData, toolKit, github_1.context);
+        const branchesInfo = yield (0, get_branches_info_1.getBranchesInfo)(branchData, toolKit, github_1.context, maxDays);
         core.debug(JSON.stringify(branchesInfo));
         if (branchesInfo.length === 0) {
             return;
@@ -183,7 +183,7 @@ function diffDate({ branchCommitterLastUpdate }) {
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
     return days;
 }
-function getBranchesInfo(branchData, toolKit, context) {
+function getBranchesInfo(branchData, toolKit, context, maxDays) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
             // criar lista de branch que nao vai ser preciso ser avaliada
@@ -193,6 +193,12 @@ function getBranchesInfo(branchData, toolKit, context) {
             core.debug(branch);
             const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, context.repo), { commit_sha: branch.commit.sha }));
             core.debug(data);
+            const days = diffDate({
+                branchCommitterLastUpdate: data.committer.date
+            });
+            if (days <= parseInt(maxDays)) {
+                return null;
+            }
             return {
                 branchName: branch.name,
                 branchCommitSha: branch.commit.sha,
@@ -277,7 +283,8 @@ function run() {
             core.debug(new Date().toTimeString());
             const channelID = core.getInput('channel_id');
             const threadTS = core.getInput('thread_ts');
-            yield (0, date_branch_1.execute)({ channelID, threadTS });
+            const maxDays = core.getInput('max_days');
+            yield (0, date_branch_1.execute)({ channelID, threadTS, maxDays });
             core.debug(new Date().toTimeString());
         }
         catch (error) {

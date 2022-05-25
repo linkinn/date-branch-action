@@ -13,7 +13,8 @@ function diffDate({branchCommitterLastUpdate}: IDiffDate): number {
 export async function getBranchesInfo(
   branchData: any,
   toolKit: any,
-  context: Context
+  context: Context,
+  maxDays: string
 ): Promise<IBranchesInfo[]> {
   return await Promise.all(
     branchData.map(async (branch: any) => {
@@ -29,6 +30,14 @@ export async function getBranchesInfo(
       })
 
       core.debug(data)
+
+      const days = diffDate({
+        branchCommitterLastUpdate: data.committer.date
+      })
+
+      if (days <= parseInt(maxDays)) {
+        return null
+      }
 
       return {
         branchName: branch.name,

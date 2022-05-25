@@ -8,6 +8,10 @@ inputs:
   thread_ts:
     required: false
     description: 'add thread id'
+  max_days:
+    required: false
+    description: 'add thread id'
+    default: '30'
 runs:
   using: 'node16'
   main: 'dist/index.js'

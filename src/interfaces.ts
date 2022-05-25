@@ -1,6 +1,7 @@
 export interface IDateBranch {
   channelID: string
   threadTS: string
+  maxDays: string
 }
 
 export interface IBranchesInfo {

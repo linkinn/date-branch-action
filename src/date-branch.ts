@@ -7,7 +7,8 @@ import {getBranchesInfo} from './libs/get-branches-info'
 
 export async function execute({
   channelID,
-  threadTS
+  threadTS,
+  maxDays
 }: IDateBranch): Promise<void> {
   const toolKit = getOctokit(githubToken())
 
@@ -15,7 +16,12 @@ export async function execute({
     ...context.repo
   })
 
-  const branchesInfo = await getBranchesInfo(branchData, toolKit, context)
+  const branchesInfo = await getBranchesInfo(
+    branchData,
+    toolKit,
+    context,
+    maxDays
+  )
 
   core.debug(JSON.stringify(branchesInfo))
 
