@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import {getOctokit, context} from '@actions/github'
-import { IBranchesInfo, IDateBranch } from './interfaces'
+import {IBranchesInfo, IDateBranch} from './interfaces'
 import {slack} from './slack-send'
 
 function githubToken(): string {
@@ -10,7 +10,10 @@ function githubToken(): string {
   return token
 }
 
-async function getBranchesInfo(branchData: any, toolKit: any): Promise<IBranchesInfo[]> {
+async function getBranchesInfo(
+  branchData: any,
+  toolKit: any
+): Promise<IBranchesInfo[]> {
   return await Promise.all(
     branchData.map(async (branch: any) => {
       const {data} = await toolKit.rest.git.getCommit({
@@ -30,7 +33,10 @@ async function getBranchesInfo(branchData: any, toolKit: any): Promise<IBranches
   )
 }
 
-export async function execute({channelID, threadTS}: IDateBranch): Promise<void> {
+export async function execute({
+  channelID,
+  threadTS
+}: IDateBranch): Promise<void> {
   const toolKit = getOctokit(githubToken())
 
   const {data: branchData} = await toolKit.rest.repos.listBranches({

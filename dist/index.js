@@ -57,11 +57,9 @@ function githubToken() {
         throw ReferenceError('No token defined in the environment variables');
     return token;
 }
-function execute() {
+function getBranchesInfo(branchData, toolKit) {
     return __awaiter(this, void 0, void 0, function* () {
-        const toolKit = (0, github_1.getOctokit)(githubToken());
-        const { data: branchData } = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
-        const branchesInfo = yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
+        return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
             const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, github_1.context.repo), { commit_sha: branch.commit.sha }));
             return {
                 branchName: branch.name,
@@ -72,6 +70,13 @@ function execute() {
                 branchCommitMessage: data.message
             };
         })));
+    });
+}
+function execute({ channelID, threadTS }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const toolKit = (0, github_1.getOctokit)(githubToken());
+        const { data: branchData } = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
+        const branchesInfo = yield getBranchesInfo(branchData, toolKit);
         core.debug(JSON.stringify(branchesInfo));
         if (branchesInfo.length === 0) {
             return;
@@ -80,12 +85,12 @@ function execute() {
         if (!slackToken) {
             return;
         }
-        const channelID = core.getInput('channel_id');
         yield (0, slack_send_1.slack)({
             channelID,
             branchesInfo,
             repoName: github_1.context.repo.repo,
-            slackToken
+            slackToken,
+            threadTS
         });
     });
 }
@@ -138,7 +143,9 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug(new Date().toTimeString());
-            yield (0, date_branch_1.execute)();
+            const channelID = core.getInput('channel_id');
+            const threadTS = core.getInput('thread_ts');
+            yield (0, date_branch_1.execute)({ channelID, threadTS });
             core.debug(new Date().toTimeString());
         }
         catch (error) {
@@ -193,43 +200,71 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.slack = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const web_api_1 = __nccwpck_require__(431);
+function blockMessage(repoName) {
+    const blocks = [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: `@channel :patying_face::patying_face::patying_face: *Braches aniversariantes da semana do repositorio \`${repoName}\`* :sweat::sweat::sweat:`
+            }
+        }
+    ];
+    return blocks;
+}
 function createBlock(branchesInfo) {
-    const { branchCommitAuthor, branchCommitLastUpdate, branchCommitMessage, branchCommitUrl, branchName } = branchesInfo;
-    const message = `${branchCommitMessage.slice(0, 40)}...`;
+    const { branchCommitAuthor, // Criado da branch
+    branchCommitLastUpdate, // Colocar logica de data
+    branchName } = branchesInfo;
     const block = {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: `> Nome da Branch: \`${branchName}\`\n> URL Ultimo Commit: \`${branchCommitUrl}\`\n> Autor do Ultimo Commit: \`${branchCommitAuthor}\`\n> Data do Ultimo Commit: \`${branchCommitLastUpdate}\`\n> Mensagem do Commit: \`${message}\``
+            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitLastUpdate}\` sem receber atualizações`
         }
     };
     return block;
 }
-function slack({ channelID, branchesInfo, repoName, slackToken }) {
+function blockThread(branchesInfo) {
+    const blocks = [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: `:warning::construction::put_litter_in_its_place: \`Fiquem atentos, em breve bracnhes com mais de 30 dias sem atualização serão removidas automaticamente\``
+            }
+        }
+    ];
+    for (const branchInfo of branchesInfo) {
+        // criar lista de branch que nao vai ser preciso ser avaliada
+        if (branchInfo.branchName.startsWith('dependabot')) {
+            continue;
+        }
+        blocks.push(createBlock(branchInfo));
+    }
+    return blocks;
+}
+function slack({ channelID, branchesInfo, repoName, slackToken, threadTS }) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`Start slack message...`);
         try {
             const webClient = new web_api_1.WebClient(slackToken);
-            const blocks = [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: `Repositorio ${repoName} tem branches aniversariantes`
-                    }
-                }
-            ];
-            for (const branchInfo of branchesInfo) {
-                if (branchInfo.branchName.startsWith('dependabot')) {
-                    continue;
-                }
-                blocks.push(createBlock(branchInfo));
+            let blocks = [];
+            if (threadTS) {
+                blocks = blockThread(branchesInfo);
             }
-            yield webClient.chat.postMessage({
+            else {
+                blocks = blockMessage(repoName);
+            }
+            const { message } = yield webClient.chat.postMessage({
                 mrkdwn: true,
                 blocks,
                 channel: channelID
             });
+            const thread_ts = message === null || message === void 0 ? void 0 : message.ts;
+            if (thread_ts) {
+                core.setOutput('thread_ts', thread_ts);
+            }
             core.debug(`time: ${new Date().toTimeString()}`);
         }
         catch (e) {

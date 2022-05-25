@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import {execute} from './date-branch'
-import { slack } from './slack-send'
 
 async function run(): Promise<void> {
   try {

@@ -69,7 +69,7 @@ export async function slack({
     const webClient = new WebClient(slackToken)
     let blocks: IBlocks[] = []
 
-    if(threadTS) {
+    if (threadTS) {
       blocks = blockThread(branchesInfo)
     } else {
       blocks = blockMessage(repoName)
