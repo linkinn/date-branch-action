@@ -8,8 +8,10 @@ export interface IBranchesInfo {
   branchCommitSha: string
   branchCommitUrl: string
   branchCommitAuthor: string
-  branchCommitLastUpdate: string
-  branchCommitMessage: string
+  branchCommitAuthorDate: string
+  branchCommitterName: string
+  branchCommitterLastUpdate: string
+  branchCommitterMessage: string
 }
 
 export interface ISlack {

@@ -17,7 +17,7 @@ export function blockMessage(repoName: string): IBlocks[] {
 function createBlock(branchesInfo: IBranchesInfo): IBlocks {
   const {
     branchCommitAuthor, // Criado da branch
-    branchCommitLastUpdate, // Colocar logica de data
+    branchCommitterLastUpdate, // Colocar logica de data
     branchName
   } = branchesInfo
 
@@ -25,7 +25,7 @@ function createBlock(branchesInfo: IBranchesInfo): IBlocks {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitLastUpdate}\` sem receber atualizações`
+      text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate}\` sem receber atualizações`
     }
   }
 
