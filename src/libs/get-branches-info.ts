@@ -1,4 +1,4 @@
-import { Context } from '@actions/github/lib/context'
+import {Context} from '@actions/github/lib/context'
 import {IBranchesInfo} from '../interfaces'
 
 export async function getBranchesInfo(

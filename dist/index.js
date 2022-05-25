@@ -51,32 +51,13 @@ exports.execute = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
 const slack_send_1 = __nccwpck_require__(9555);
-function githubToken() {
-    const token = process.env.GITHUB_TOKEN;
-    if (!token)
-        throw ReferenceError('No token defined in the environment variables');
-    return token;
-}
-function getBranchesInfo(branchData, toolKit) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
-            const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, github_1.context.repo), { commit_sha: branch.commit.sha }));
-            return {
-                branchName: branch.name,
-                branchCommitSha: branch.commit.sha,
-                branchCommitUrl: branch.commit.url,
-                branchCommitAuthor: data.committer.name,
-                branchCommitLastUpdate: data.committer.date,
-                branchCommitMessage: data.message
-            };
-        })));
-    });
-}
+const get_github_token_1 = __nccwpck_require__(2589);
+const get_branches_info_1 = __nccwpck_require__(6164);
 function execute({ channelID, threadTS }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const toolKit = (0, github_1.getOctokit)(githubToken());
+        const toolKit = (0, github_1.getOctokit)((0, get_github_token_1.githubToken)());
         const { data: branchData } = yield toolKit.rest.repos.listBranches(Object.assign({}, github_1.context.repo));
-        const branchesInfo = yield getBranchesInfo(branchData, toolKit);
+        const branchesInfo = yield (0, get_branches_info_1.getBranchesInfo)(branchData, toolKit, github_1.context);
         core.debug(JSON.stringify(branchesInfo));
         if (branchesInfo.length === 0) {
             return;
@@ -121,13 +102,13 @@ function blockMessage(repoName) {
 exports.blockMessage = blockMessage;
 function createBlock(branchesInfo) {
     const { branchCommitAuthor, // Criado da branch
-    branchCommitLastUpdate, // Colocar logica de data
+    branchCommitterLastUpdate, // Colocar logica de data
     branchName } = branchesInfo;
     const block = {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitLastUpdate}\` sem receber atualizações`
+            text: `> \`${branchCommitAuthor}\`, sua branch \`${branchName}\` está a \`${branchCommitterLastUpdate}\` sem receber atualizações`
         }
     };
     return block;
@@ -152,6 +133,62 @@ function blockThread(branchesInfo) {
     return blocks;
 }
 exports.blockThread = blockThread;
+
+
+/***/ }),
+
+/***/ 6164:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getBranchesInfo = void 0;
+function getBranchesInfo(branchData, toolKit, context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
+            const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, context.repo), { commit_sha: branch.commit.sha }));
+            return {
+                branchName: branch.name,
+                branchCommitSha: branch.commit.sha,
+                branchCommitUrl: branch.commit.url,
+                branchCommitAuthor: data.commit.author.name,
+                branchCommitAuthorDate: data.commit.author.date,
+                branchCommitterName: data.committer.name,
+                branchCommitterLastUpdate: data.committer.date,
+                branchCommitterMessage: data.message
+            };
+        })));
+    });
+}
+exports.getBranchesInfo = getBranchesInfo;
+
+
+/***/ }),
+
+/***/ 2589:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.githubToken = void 0;
+function githubToken() {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token)
+        throw ReferenceError('No token defined in the environment variables');
+    return token;
+}
+exports.githubToken = githubToken;
 
 
 /***/ }),
