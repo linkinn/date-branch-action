@@ -32,7 +32,7 @@ export async function getBranchesInfo(
         branchCommitterLastUpdate: data.committer.date
       })
 
-      if (days <= parseInt(maxDays)) {
+      if (days < parseInt(maxDays)) {
         return null
       }
 

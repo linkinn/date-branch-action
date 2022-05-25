@@ -191,7 +191,7 @@ function getBranchesInfo(branchData, toolKit, context, maxDays) {
             const days = diffDate({
                 branchCommitterLastUpdate: data.committer.date
             });
-            if (days <= parseInt(maxDays)) {
+            if (days < parseInt(maxDays)) {
                 return null;
             }
             return {

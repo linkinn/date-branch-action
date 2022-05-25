@@ -19,6 +19,7 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         with:
           channel_id: ${{ secrets.CHANNEL_ID }}
+          max_days: 1
 
   slack-thread:
     runs-on: ubuntu-latest
@@ -35,6 +36,7 @@ jobs:
         with:
           channel_id: ${{secrets.CHANNEL_ID}}
           thread_ts: ${{ needs.slack.outputs.thread_ts }}
+          max_days: 1
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
