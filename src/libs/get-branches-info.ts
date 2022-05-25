@@ -16,20 +16,17 @@ export async function getBranchesInfo(
   context: Context,
   maxDays: string
 ): Promise<IBranchesInfo[]> {
-  return await Promise.all(
+  const branchesInfo = await Promise.all(
     branchData.map(async (branch: any) => {
       // criar lista de branch que nao vai ser preciso ser avaliada
       if (branch.name.startsWith('dependabot')) {
         return null
       }
-      core.debug(branch)
 
       const {data} = await toolKit.rest.git.getCommit({
         ...context.repo,
         commit_sha: branch.commit.sha
       })
-
-      core.debug(data)
 
       const days = diffDate({
         branchCommitterLastUpdate: data.committer.date
@@ -53,4 +50,8 @@ export async function getBranchesInfo(
       }
     })
   )
+
+  const branchesInfoFilter = branchesInfo.filter(b => b !== null)
+  core.debug(JSON.stringify(branchesInfoFilter))
+  return branchesInfoFilter
 }

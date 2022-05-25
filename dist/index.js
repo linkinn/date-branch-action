@@ -124,9 +124,6 @@ function blockThread(branchesInfo) {
         }
     ];
     for (const branchInfo of branchesInfo) {
-        if (branchInfo === null) {
-            continue;
-        }
         blocks.push(createBlock(branchInfo));
     }
     return blocks;
@@ -185,14 +182,12 @@ function diffDate({ branchCommitterLastUpdate }) {
 }
 function getBranchesInfo(branchData, toolKit, context, maxDays) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
+        const branchesInfo = yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
             // criar lista de branch que nao vai ser preciso ser avaliada
             if (branch.name.startsWith('dependabot')) {
                 return null;
             }
-            core.debug(branch);
             const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, context.repo), { commit_sha: branch.commit.sha }));
-            core.debug(data);
             const days = diffDate({
                 branchCommitterLastUpdate: data.committer.date
             });
@@ -212,6 +207,9 @@ function getBranchesInfo(branchData, toolKit, context, maxDays) {
                 branchCommitterMessage: data.message
             };
         })));
+        const branchesInfoFilter = branchesInfo.filter(b => b !== null);
+        core.debug(JSON.stringify(branchesInfoFilter));
+        return branchesInfoFilter;
     });
 }
 exports.getBranchesInfo = getBranchesInfo;
