@@ -11,7 +11,7 @@ export async function getBranchesInfo(
     branchData.map(async (branch: any) => {
       // criar lista de branch que nao vai ser preciso ser avaliada
       if (branch.name.startsWith('dependabot')) {
-        return
+        return null
       }
       core.debug(branch)
 

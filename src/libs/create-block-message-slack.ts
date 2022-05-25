@@ -44,6 +44,9 @@ export function blockThread(branchesInfo: IBranchesInfo[]): IBlocks[] {
   ]
 
   for (const branchInfo of branchesInfo) {
+    if (branchInfo === null) {
+      continue
+    }
     blocks.push(createBlock(branchInfo))
   }
 
