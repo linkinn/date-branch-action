@@ -124,10 +124,6 @@ function blockThread(branchesInfo) {
         }
     ];
     for (const branchInfo of branchesInfo) {
-        // criar lista de branch que nao vai ser preciso ser avaliada
-        if (branchInfo.branchName.startsWith('dependabot')) {
-            continue;
-        }
         blocks.push(createBlock(branchInfo));
     }
     return blocks;
@@ -180,6 +176,11 @@ const core = __importStar(__nccwpck_require__(2186));
 function getBranchesInfo(branchData, toolKit, context) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
+            // criar lista de branch que nao vai ser preciso ser avaliada
+            if (branch.name.startsWith('dependabot')) {
+                return;
+            }
+            core.debug(branch);
             const { data } = yield toolKit.rest.git.getCommit(Object.assign(Object.assign({}, context.repo), { commit_sha: branch.commit.sha }));
             core.debug(data);
             return {

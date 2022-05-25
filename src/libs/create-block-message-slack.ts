@@ -44,10 +44,6 @@ export function blockThread(branchesInfo: IBranchesInfo[]): IBlocks[] {
   ]
 
   for (const branchInfo of branchesInfo) {
-    // criar lista de branch que nao vai ser preciso ser avaliada
-    if (branchInfo.branchName.startsWith('dependabot')) {
-      continue
-    }
     blocks.push(createBlock(branchInfo))
   }
 
