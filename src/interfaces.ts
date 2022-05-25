@@ -1,3 +1,8 @@
+export interface IDateBranch {
+  channelID: string
+  threadTS: string
+}
+
 export interface IBranchesInfo {
   branchName: string
   branchCommitSha: string
@@ -12,6 +17,7 @@ export interface ISlack {
   branchesInfo: IBranchesInfo[]
   repoName: string
   slackToken: string
+  threadTS: string
 }
 
 export interface IBlocks {

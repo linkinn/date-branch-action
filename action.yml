@@ -5,6 +5,9 @@ inputs:
   channel_id:
     required: false
     description: 'Add channel'
+  thread_ts:
+    required: false
+    description: 'add thread id'
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import {getOctokit, context} from '@actions/github'
+import { IBranchesInfo, IDateBranch } from './interfaces'
 import {slack} from './slack-send'
 
 function githubToken(): string {
@@ -9,15 +10,9 @@ function githubToken(): string {
   return token
 }
 
-export async function execute(): Promise<void> {
-  const toolKit = getOctokit(githubToken())
-
-  const {data: branchData} = await toolKit.rest.repos.listBranches({
-    ...context.repo
-  })
-
-  const branchesInfo = await Promise.all(
-    branchData.map(async branch => {
+async function getBranchesInfo(branchData: any, toolKit: any): Promise<IBranchesInfo[]> {
+  return await Promise.all(
+    branchData.map(async (branch: any) => {
       const {data} = await toolKit.rest.git.getCommit({
         ...context.repo,
         commit_sha: branch.commit.sha
@@ -33,6 +28,16 @@ export async function execute(): Promise<void> {
       }
     })
   )
+}
+
+export async function execute({channelID, threadTS}: IDateBranch): Promise<void> {
+  const toolKit = getOctokit(githubToken())
+
+  const {data: branchData} = await toolKit.rest.repos.listBranches({
+    ...context.repo
+  })
+
+  const branchesInfo = await getBranchesInfo(branchData, toolKit)
 
   core.debug(JSON.stringify(branchesInfo))
 
@@ -46,11 +51,11 @@ export async function execute(): Promise<void> {
     return
   }
 
-  const channelID = core.getInput('channel_id')
   await slack({
     channelID,
     branchesInfo,
     repoName: context.repo.repo,
-    slackToken
+    slackToken,
+    threadTS
   })
 }

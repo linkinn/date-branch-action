@@ -3,13 +3,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  slack:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./
+      - name: Checkout Github
+        uses: actions/checkout@v3
+
+      - name: Slack Send Message
+        id: thread_id
+        uses: ./
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         with:
           channel_id: ${{ secrets.CHANNEL_ID }}
+
+  slack-thread:
+    runs-on: ubuntu-latest
+    needs: slack
+    steps:
+      - name: Checkout Github
+        uses: actions/checkout@v3
+
+      - name: Echo Thread ID
+        run: echo ${{ needs.slack.outputs.thread_ts }}
+
+      - name: Slack Send Message in Thread
+        uses: ./
+        with:
+          channel_id: ${{secrets.CHANNEL_ID}}
+          thread_ts: ${{ needs.slack.outputs.thread_ts }}
+        env:
+          SLACK_TOKEN: ${{secrets.SLACK_TOKEN}}
