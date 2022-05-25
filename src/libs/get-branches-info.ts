@@ -1,6 +1,14 @@
 import * as core from '@actions/core'
 import {Context} from '@actions/github/lib/context'
-import {IBranchesInfo} from '../interfaces'
+import {IBranchesInfo, IDiffDate} from '../interfaces'
+
+function diffDate({branchCommitterLastUpdate}: IDiffDate): number {
+  const lastDateCommit = new Date(branchCommitterLastUpdate)
+  const currentDate = new Date()
+  const diff = Math.abs(currentDate.getTime() - lastDateCommit.getTime())
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+  return days
+}
 
 export async function getBranchesInfo(
   branchData: any,
@@ -29,7 +37,9 @@ export async function getBranchesInfo(
         branchCommitAuthor: data.author.name,
         branchCommitAuthorDate: data.author.date,
         branchCommitterName: data.committer.name,
-        branchCommitterLastUpdate: data.committer.date,
+        branchCommitterLastUpdate: diffDate({
+          branchCommitterLastUpdate: data.committer.date
+        }),
         branchCommitterMessage: data.message
       }
     })

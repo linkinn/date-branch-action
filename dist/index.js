@@ -176,6 +176,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getBranchesInfo = void 0;
 const core = __importStar(__nccwpck_require__(2186));
+function diffDate({ branchCommitterLastUpdate }) {
+    const lastDateCommit = new Date(branchCommitterLastUpdate);
+    const currentDate = new Date();
+    const diff = Math.abs(currentDate.getTime() - lastDateCommit.getTime());
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days;
+}
 function getBranchesInfo(branchData, toolKit, context) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield Promise.all(branchData.map((branch) => __awaiter(this, void 0, void 0, function* () {
@@ -193,7 +200,7 @@ function getBranchesInfo(branchData, toolKit, context) {
                 branchCommitAuthor: data.author.name,
                 branchCommitAuthorDate: data.author.date,
                 branchCommitterName: data.committer.name,
-                branchCommitterLastUpdate: data.committer.date,
+                branchCommitterLastUpdate: diffDate({ branchCommitterLastUpdate: data.committer.date }),
                 branchCommitterMessage: data.message
             };
         })));

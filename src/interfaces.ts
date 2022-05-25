@@ -27,3 +27,7 @@ export interface IBlocks {
   text: any
   accessory?: any
 }
+
+export interface IDiffDate {
+  branchCommitterLastUpdate: string
+}
