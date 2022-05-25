@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import {Context} from '@actions/github/lib/context'
 import {IBranchesInfo} from '../interfaces'
 
@@ -12,6 +13,8 @@ export async function getBranchesInfo(
         ...context.repo,
         commit_sha: branch.commit.sha
       })
+
+      core.debug(data)
 
       return {
         branchName: branch.name,
